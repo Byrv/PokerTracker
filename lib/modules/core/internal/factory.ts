@@ -1,6 +1,23 @@
 import type { DbBoundary } from '@/lib/db/boundary';
 import type { Core } from '../index';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function createCore(_b: DbBoundary): Core {
-  throw new Error('core: not implemented (module agent owns this)');
+import { chipsToPaise, paiseToChips } from './units';
+import { formatDate, formatDateTime, formatINR } from './format';
+import { computeNetPL } from './pl';
+import { assertSessionOpen, permissionFor } from './permissions';
+import { makeSettings } from './settings';
+
+export function createCore(b: DbBoundary): Core {
+  const settings = makeSettings(b);
+  return {
+    chipsToPaise,
+    paiseToChips,
+    formatINR,
+    formatDate,
+    formatDateTime,
+    computeNetPL,
+    assertSessionOpen,
+    permissionFor,
+    getChipRatio: settings.getChipRatio,
+    setChipRatio: settings.setChipRatio,
+  };
 }

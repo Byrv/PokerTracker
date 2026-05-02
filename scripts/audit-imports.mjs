@@ -28,7 +28,12 @@ function grep(roots, regex) {
       const text = readFileSync(file, 'utf8');
       const lines = text.split(/\r?\n/);
       for (let i = 0; i < lines.length; i++) {
-        if (regex.test(lines[i])) hits.push(`${file}:${i + 1}: ${lines[i].trim()}`);
+        if (!regex.test(lines[i])) continue;
+        // Honor the same per-line eslint disable that ESLint uses, so an explicit
+        // architectural exception (e.g. a registry-shape test) doesn't double-fail.
+        const prev = i > 0 ? lines[i - 1] : '';
+        if (/eslint-disable-next-line[^\n]*no-restricted-imports/.test(prev)) continue;
+        hits.push(`${file}:${i + 1}: ${lines[i].trim()}`);
       }
     }
   }
