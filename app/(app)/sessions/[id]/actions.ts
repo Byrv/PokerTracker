@@ -75,6 +75,18 @@ export async function editCashoutAction(input: {
   revalidatePath(`/sessions/${input.sessionId}`);
 }
 
+export async function addParticipantAction(input: { sessionId: string; userId: string }) {
+  const { sessions } = await getModules();
+  await sessions.addParticipant(asSessionId(input.sessionId), asUserId(input.userId));
+  revalidatePath(`/sessions/${input.sessionId}`);
+}
+
+export async function removeParticipantAction(input: { sessionId: string; userId: string }) {
+  const { sessions } = await getModules();
+  await sessions.removeParticipant(asSessionId(input.sessionId), asUserId(input.userId));
+  revalidatePath(`/sessions/${input.sessionId}`);
+}
+
 export async function closeSessionAction(sessionId: string) {
   const { sessions, badges } = await getModules();
   await sessions.closeSession(asSessionId(sessionId));

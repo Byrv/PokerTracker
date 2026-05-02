@@ -39,6 +39,14 @@ export async function createRealBoundary(): Promise<DbBoundary> {
           .maybeSingle();
         return data;
       },
+      list: async () => {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .order('nickname', { ascending: true });
+        if (error) throw error;
+        return data ?? [];
+      },
       update: async (userId, patch) => {
         const { data, error } = await supabase
           .from('profiles')
@@ -107,6 +115,13 @@ export async function createRealBoundary(): Promise<DbBoundary> {
           .eq('session_id', sessionId);
         if (error) throw error;
         return data ?? [];
+      },
+      addParticipant: async (sessionId, userId) => {
+        const { error } = await supabase.rpc('house_add_participant', {
+          s: sessionId,
+          u: userId,
+        });
+        if (error) throw error;
       },
       removeParticipant: async (sessionId, userId) => {
         const { error } = await supabase

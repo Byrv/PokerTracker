@@ -14,6 +14,7 @@ import { CloseSessionButton } from './_components/close-session-button';
 import { ConfirmCashoutsList } from './_components/confirm-cashouts-list';
 import { InvitePanel } from './_components/invite-panel';
 import { LedgerAdminPanel } from './_components/ledger-admin-panel';
+import { ParticipantsManager } from './_components/participants-manager';
 import { RecordBuyinSheet } from './_components/record-buyin-sheet';
 import { SessionTabs } from './_components/session-tabs';
 import { SubmitCashoutDrawer } from './_components/submit-cashout-drawer';
@@ -27,7 +28,7 @@ export default async function SessionDetail({ params }: { params: Promise<{ id: 
   const session = await sessions.getSession(asSessionId(id)).catch(() => null);
   if (!session) notFound();
 
-  const [buyins, cashouts, sessionLedger, recon, notes, photos, audit, inviteUrl] =
+  const [buyins, cashouts, sessionLedger, recon, notes, photos, audit, inviteUrl, allUsers] =
     await Promise.all([
       ledger.listBuyins(session.id),
       ledger.listCashouts(session.id),
@@ -37,6 +38,7 @@ export default async function SessionDetail({ params }: { params: Promise<{ id: 
       media.listPhotos(session.id),
       ledger.listAudit(session.id),
       sessions.generateInviteUrl(session.id),
+      profiles.listAllUsers(),
     ]);
 
   // Build a userId -> nickname map for participants + anyone showing up in
@@ -123,6 +125,23 @@ export default async function SessionDetail({ params }: { params: Promise<{ id: 
     nickname: nicknameOf(uid),
   }));
 
+  const participantSet = new Set(session.participants.map((p) => p as unknown as string));
+  const participantsForManager = session.participants.map((uid) => {
+    const meta = nameByUser.get(uid);
+    return {
+      id: uid as unknown as string,
+      nickname: meta?.nickname ?? (uid as unknown as string).slice(0, 6),
+      ...(meta?.avatarUrl ? { avatarUrl: meta.avatarUrl } : {}),
+    };
+  });
+  const candidatesForManager = allUsers
+    .filter((u) => !participantSet.has(u.id as unknown as string))
+    .map((u) => ({
+      id: u.id as unknown as string,
+      nickname: u.nickname,
+      ...(u.avatarUrl ? { avatarUrl: u.avatarUrl } : {}),
+    }));
+
   const ledgerNode = (
     <>
       <Card>
@@ -170,6 +189,19 @@ export default async function SessionDetail({ params }: { params: Promise<{ id: 
             value={recon.discrepancy}
             variant={recon.discrepancy === 0 ? 'profit' : 'loss'}
             showSign
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-4">
+          <ParticipantsManager
+            sessionId={session.id}
+            isHouse={isHouse}
+            isOpen={session.status === 'open'}
+            creatorId={session.createdBy as unknown as string}
+            participants={participantsForManager}
+            candidates={candidatesForManager}
           />
         </CardContent>
       </Card>

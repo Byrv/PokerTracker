@@ -349,6 +349,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      house_add_participant: {
+        Args: { s: string; u: string };
+        Returns: undefined;
+      };
       is_session_house: { Args: { s: string }; Returns: boolean };
       is_session_participant: { Args: { s: string }; Returns: boolean };
       join_session_with_token: {

@@ -59,14 +59,19 @@ export function createSessions(b: DbBoundary): Sessions {
     },
 
     async addParticipant(sessionId, userId) {
-      // Idempotent: if already a participant, no-op.
-      // Direct house-side adds beyond the creator are routed through invite URLs;
-      // when the boundary does not expose a direct insert, callers must use the
-      // invite flow. The creator is added by sessions.create so re-calling this
-      // for the creator is safely a no-op.
+      // Idempotent: if already a participant, no-op. Otherwise delegate to
+      // the boundary which (in production) calls the house_add_participant
+      // RPC — that RPC enforces is_session_house and session-must-be-open at
+      // the DB level. We mirror those checks here for clearer error messages.
       const ps = await b.sessions.listParticipants(sessionId);
       if (ps.some((p) => p.user_id === (userId as string))) return;
-      throw new Error('use_invite_url');
+      const me = await b.auth.getCurrentUser();
+      if (!me) throw new Error('not_authenticated');
+      const session = await b.sessions.get(sessionId);
+      if (!session) throw new Error('not_found');
+      if (session.created_by !== me.id) throw new Error('not_house');
+      if (session.status === 'closed') throw new Error('session_closed');
+      await b.sessions.addParticipant(sessionId, userId as unknown as string);
     },
 
     async removeParticipant(sessionId, userId) {

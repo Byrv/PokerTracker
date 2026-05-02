@@ -94,5 +94,14 @@ export function createProfiles(b: DbBoundary): Profiles {
       if (patch.avatarUrl !== undefined) updates.avatar_url = patch.avatarUrl;
       await b.profiles.update(me.id, updates);
     },
+
+    async listAllUsers() {
+      const rows = await b.profiles.list();
+      return rows.map((r) => ({
+        id: asUserId(r.user_id),
+        nickname: r.nickname,
+        ...(r.avatar_url ? { avatarUrl: r.avatar_url } : {}),
+      }));
+    },
   };
 }

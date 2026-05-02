@@ -30,6 +30,7 @@ export interface DbBoundary {
   // Per-table CRUD (the methods each module actually needs).
   profiles: {
     get: (userId: string) => Promise<ProfileRow | null>;
+    list: () => Promise<ProfileRow[]>;
     update: (userId: string, patch: Partial<ProfileRow>) => Promise<ProfileRow>;
   };
   appSettings: {
@@ -42,6 +43,7 @@ export interface DbBoundary {
     list: (filter?: { status?: 'open' | 'closed' }) => Promise<SessionRow[]>;
     update: (id: string, patch: SessionUpdate) => Promise<SessionRow>;
     listParticipants: (sessionId: string) => Promise<ParticipantRow[]>;
+    addParticipant: (sessionId: string, userId: string) => Promise<void>;
     removeParticipant: (sessionId: string, userId: string) => Promise<void>;
   };
   buyins: {

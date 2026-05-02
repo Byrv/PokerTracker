@@ -129,6 +129,7 @@ export function createFakeBoundary(seed: SeedData = {}): DbBoundary & {
 
     profiles: {
       get: async (userId) => profiles.get(userId) ?? null,
+      list: async () => [...profiles.values()].sort((a, b) => a.nickname.localeCompare(b.nickname)),
       update: async (userId, patch) => {
         const p = profiles.get(userId);
         if (!p) throw new Error('not_found');
@@ -203,6 +204,18 @@ export function createFakeBoundary(seed: SeedData = {}): DbBoundary & {
       },
       listParticipants: async (sessionId) =>
         [...participants.values()].filter((p) => p.session_id === sessionId),
+      addParticipant: async (sessionId, userId) => {
+        // Mirrors house_add_participant RPC: requires open session; no-op if
+        // already a participant. House-permission check lives in the calling
+        // module so the fake stays a permissive seam.
+        const session = sessions.get(sessionId);
+        if (!session) throw new Error('not_found');
+        if (session.status === 'closed') throw new Error('session_closed');
+        const key = `${sessionId}|${userId}`;
+        if (!participants.has(key)) {
+          participants.set(key, { session_id: sessionId, user_id: userId, joined_at: now() });
+        }
+      },
       removeParticipant: async (sessionId, userId) => {
         participants.delete(`${sessionId}|${userId}`);
       },
