@@ -37,10 +37,9 @@ try {
   console.log(`Found ${sessions.length} sessions to wipe.`);
 
   for (const s of sessions) {
-    await c.query(
-      `select set_config('request.jwt.claims', $1, true)`,
-      [JSON.stringify({ sub: s.created_by, role: 'authenticated' })],
-    );
+    await c.query(`select set_config('request.jwt.claims', $1, true)`, [
+      JSON.stringify({ sub: s.created_by, role: 'authenticated' }),
+    ]);
     // The assert_session_open trigger on buyins / notes blocks DELETE when
     // status='closed'. Reopen the session first so the wipe passes.
     // closed->open isn't audit-logged (only open->close is) so no extra rows.
