@@ -53,7 +53,10 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Empty turbopack config silences Next 16's warning about a webpack hook
+  // (added by next-pwa above) without disabling Turbopack for `next dev`.
+  // Production `next build --webpack` is what actually emits the SW.
+  turbopack: {},
 };
 
 export default withPWA(nextConfig);
