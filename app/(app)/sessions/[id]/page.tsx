@@ -12,6 +12,7 @@ import { asSessionId, type UserId } from '@/lib/modules/core';
 
 import { CloseSessionButton } from './_components/close-session-button';
 import { ConfirmCashoutsList } from './_components/confirm-cashouts-list';
+import { InvitePanel } from './_components/invite-panel';
 import { LedgerAdminPanel } from './_components/ledger-admin-panel';
 import { RecordBuyinSheet } from './_components/record-buyin-sheet';
 import { SessionTabs } from './_components/session-tabs';
@@ -26,15 +27,17 @@ export default async function SessionDetail({ params }: { params: Promise<{ id: 
   const session = await sessions.getSession(asSessionId(id)).catch(() => null);
   if (!session) notFound();
 
-  const [buyins, cashouts, sessionLedger, recon, notes, photos, audit] = await Promise.all([
-    ledger.listBuyins(session.id),
-    ledger.listCashouts(session.id),
-    ledger.getSessionLedger(session.id),
-    ledger.getReconciliation(session.id),
-    media.listNotes(session.id),
-    media.listPhotos(session.id),
-    ledger.listAudit(session.id),
-  ]);
+  const [buyins, cashouts, sessionLedger, recon, notes, photos, audit, inviteUrl] =
+    await Promise.all([
+      ledger.listBuyins(session.id),
+      ledger.listCashouts(session.id),
+      ledger.getSessionLedger(session.id),
+      ledger.getReconciliation(session.id),
+      media.listNotes(session.id),
+      media.listPhotos(session.id),
+      ledger.listAudit(session.id),
+      sessions.generateInviteUrl(session.id),
+    ]);
 
   // Build a userId -> nickname map for participants + anyone showing up in
   // ledger / cashouts / audit (covers users who left the session).
@@ -173,6 +176,9 @@ export default async function SessionDetail({ params }: { params: Promise<{ id: 
 
       <HouseControls isHouse={isHouse}>
         <div className="space-y-4">
+          {session.status === 'open' ? (
+            <InvitePanel sessionName={session.name} inviteUrl={inviteUrl} />
+          ) : null}
           <div className="flex flex-wrap items-center gap-3">
             <RecordBuyinSheet sessionId={session.id} participants={participantOptions} />
             <CloseSessionButton
