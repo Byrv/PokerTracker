@@ -209,25 +209,29 @@ export default async function SessionDetail({ params }: { params: Promise<{ id: 
       <HouseControls isHouse={isHouse}>
         <div className="space-y-4">
           {session.status === 'open' ? (
-            <InvitePanel sessionName={session.name} inviteUrl={inviteUrl} />
-          ) : null}
-          <div className="flex flex-wrap items-center gap-3">
-            <RecordBuyinSheet sessionId={session.id} participants={participantOptions} />
-            <CloseSessionButton
-              sessionId={session.id}
-              canClose={canClose}
-              reason={cantCloseReason}
-            />
-          </div>
-          <ConfirmCashoutsList sessionId={session.id} pending={pendingCashouts} />
-          {session.status === 'open' ? (
-            <LedgerAdminPanel
-              sessionId={session.id}
-              buyins={adminBuyins}
-              cashouts={adminCashouts}
-              chipsPerPaise={session.chipsPerPaise}
-            />
-          ) : null}
+            <>
+              <InvitePanel sessionName={session.name} inviteUrl={inviteUrl} />
+              <div className="flex flex-wrap items-center gap-3">
+                <RecordBuyinSheet sessionId={session.id} participants={participantOptions} />
+                <CloseSessionButton
+                  sessionId={session.id}
+                  canClose={canClose}
+                  reason={cantCloseReason}
+                />
+              </div>
+              <ConfirmCashoutsList sessionId={session.id} pending={pendingCashouts} />
+              <LedgerAdminPanel
+                sessionId={session.id}
+                buyins={adminBuyins}
+                cashouts={adminCashouts}
+                chipsPerPaise={session.chipsPerPaise}
+              />
+            </>
+          ) : (
+            <p className="text-sm text-[var(--foreground)]/70">
+              This session is closed. Buy-ins and cash-outs are locked; the ledger is read-only.
+            </p>
+          )}
         </div>
       </HouseControls>
 
