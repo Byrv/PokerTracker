@@ -7,6 +7,19 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-profit: var(--profit);
+  --color-loss: var(--loss);
+  --color-felt-green-50: #e5f2ec;
+  --color-felt-green-100: #bfe0d0;
+  --color-felt-green-500: #0f6d40;
+  --color-felt-green-600: #0b5732;
+  --color-felt-green-700: #073d24;
+  --color-card-red-50: #fbe9e6;
+  --color-card-red-500: #c0392b;
+  --color-card-red-600: #a93226;
+  --color-cream-50: #faf7ee;
+  --color-cream-100: #f2eddc;
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
@@ -81,6 +94,13 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Poker semantic tokens (light) */
+  --surface: #ffffff;
+  --profit: #1b7f4f;
+  --loss: #c0392b;
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
 }
 
 .dark {
@@ -115,6 +135,11 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Poker semantic tokens (dark) */
+  --surface: #262626;
+  --profit: #3dcb80;
+  --loss: #ff6b5b;
 }
 
 @layer base {
@@ -126,5 +151,9 @@
   }
   html {
     @apply font-sans;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
 }

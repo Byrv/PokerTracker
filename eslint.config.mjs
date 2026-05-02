@@ -44,7 +44,18 @@ const eslintConfig = defineConfig([
       ],
     },
   },
-  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
+  globalIgnores([
+    '.next/**',
+    'out/**',
+    'build/**',
+    'next-env.d.ts',
+    // Workbox-generated service worker bundles (next-pwa output).
+    'public/sw.js',
+    'public/sw.js.map',
+    'public/workbox-*.js',
+    'public/workbox-*.js.map',
+    'public/fallback-*.js',
+  ]),
 ]);
 
 export default eslintConfig;
