@@ -19,10 +19,16 @@ export function ErrorState({
   className?: string;
 }) {
   const message = typeof error === 'string' ? error : error.message;
+  const digest = typeof error === 'object' && error && 'digest' in error ? error.digest : undefined;
   return (
     <div className={cn('flex flex-col items-center gap-3 p-8 text-center', className)} role="alert">
       <h2 className="text-foreground text-lg font-semibold">{title}</h2>
       <p className="text-muted-foreground max-w-sm text-sm">{message}</p>
+      {digest ? (
+        <code className="bg-muted text-muted-foreground rounded px-2 py-1 font-mono text-xs">
+          digest: {String(digest)}
+        </code>
+      ) : null}
       {retry ? (
         <Button onClick={retry} variant="outline">
           Try again
