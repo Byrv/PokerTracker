@@ -57,11 +57,15 @@ function DropdownMenuLabel({
   className,
   inset,
   ...props
-}: MenuPrimitive.GroupLabel.Props & {
+}: React.HTMLAttributes<HTMLDivElement> & {
   inset?: boolean;
 }) {
+  // base-ui's Menu.GroupLabel requires a parent <Menu.Group> context (throws
+  // error #31 otherwise). The shadcn pattern uses Label as a free-standing
+  // header (e.g., user name in the user menu), not a group label, so render
+  // a plain div with the original styling instead.
   return (
-    <MenuPrimitive.GroupLabel
+    <div
       data-slot="dropdown-menu-label"
       data-inset={inset}
       className={cn(
