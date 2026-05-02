@@ -10,13 +10,18 @@ import * as badges from './badges';
 import * as media from './media';
 import * as exportMod from './export';
 
-// Memoize per request via React.cache so layout + page + every nested Server
-// Component share ONE boundary (and therefore one Supabase client + one
-// auth-state cache). Without this, each Server Component creates its own
-// client; the first one's token refresh stays in-memory only (Server
-// Components can't write cookies), and subsequent clients read stale
-// cookies, race the now-consumed refresh token, and fail with
-// not_authenticated.
+/**
+ * Per-request module composition. Wrapped in React.cache() so a single
+ * request (layout + page + nested server components) shares one DbBoundary
+ * instance — i.e. one Supabase client. This is load-bearing: without
+ * memoization, each getModules() call creates a fresh client; the first
+ * call's auth.getUser() can rotate the JWT (Supabase refresh near expiry),
+ * and subsequent calls in sibling components see the old, now-revoked
+ * cookie value and throw not_authenticated. Server Components can't write
+ * cookies (refresh persistence happens in proxy.ts), so the second call's
+ * stale view is not recoverable. cache() collapses everything into one
+ * client per request, side-stepping the race.
+ */
 export const getModules = cache(async () => {
   const b = await createRealBoundary();
   return {
