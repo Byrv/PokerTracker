@@ -1,36 +1,36 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: "/"
+    directory: '/'
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
     groups:
       next:
         patterns:
-          - "next"
-          - "eslint-config-next"
+          - 'next'
+          - 'eslint-config-next'
       react:
         patterns:
-          - "react"
-          - "react-dom"
-          - "@types/react"
-          - "@types/react-dom"
+          - 'react'
+          - 'react-dom'
+          - '@types/react'
+          - '@types/react-dom'
       supabase:
         patterns:
-          - "@supabase/*"
-          - "supabase"
+          - '@supabase/*'
+          - 'supabase'
       tooling:
         patterns:
-          - "eslint*"
-          - "prettier*"
-          - "vitest*"
-          - "@vitest/*"
-          - "@playwright/*"
-          - "playwright"
+          - 'eslint*'
+          - 'prettier*'
+          - 'vitest*'
+          - '@vitest/*'
+          - '@playwright/*'
+          - 'playwright'
 
   - package-ecosystem: github-actions
-    directory: "/"
+    directory: '/'
     schedule:
       interval: weekly
     open-pull-requests-limit: 5

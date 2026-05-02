@@ -53,3 +53,7 @@ next-env.d.ts
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Local screenshots / debug images
+Screenshot*
+*.local.png
