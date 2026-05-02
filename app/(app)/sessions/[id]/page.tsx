@@ -73,9 +73,12 @@ export default async function SessionDetail({ params }: { params: Promise<{ id: 
       cantCloseReason = 'Reconciliation must be zero before closing.';
   }
 
+  // The house IS a player too — they get auto-added as a participant on session
+  // creation and submit their own cashout the same way everyone else does. Only
+  // OPERATOR actions (recording buyins for others, confirming cashouts, closing)
+  // are gated behind isHouse via HouseControls.
   const myCashout = cashouts.find((c) => c.userId === me.id);
   const showSubmitCashout =
-    !isHouse &&
     session.status === 'open' &&
     session.participants.includes(me.id) &&
     myCashout?.status !== 'confirmed';
