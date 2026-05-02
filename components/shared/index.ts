@@ -7,6 +7,8 @@ export { DesktopNav } from './desktop-nav';
 export { EmptyState } from './empty-state';
 export { ErrorState } from './error-state';
 export { HouseControls } from './house-controls';
+export { InstallButton } from './install-button';
+export { ThemeInit } from './theme-init';
 export { LoadingSkeleton, type LoadingSkeletonVariant } from './loading-skeleton';
 export { MoneyAmount, type MoneyVariant, type MoneySize } from './money-amount';
 export { primaryNav, type NavLink } from './nav-links';
