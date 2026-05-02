@@ -14,7 +14,15 @@ export const metadata = {
 
 export default async function SettingsPage() {
   const { auth, core } = await getModules();
-  const [me, ratio] = await Promise.all([auth.requireUser(), core.getChipRatio()]);
+  // Sequential, NOT Promise.all — calling auth.getUser() concurrently with
+  // another DB query can race the @supabase/ssr token-refresh path. The
+  // refresh writes new tokens to in-memory state but Server Components can't
+  // persist them to cookies, so a parallel query that triggers its own
+  // refresh attempts to use the now-consumed refresh token and fails with
+  // not_authenticated. Serializing the auth check makes the refresh complete
+  // (in-memory) before any sibling query starts.
+  const me = await auth.requireUser();
+  const ratio = await core.getChipRatio();
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-6 p-4 md:p-6">
