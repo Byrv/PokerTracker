@@ -4,15 +4,26 @@ import { getServerSupabase } from './server';
 export async function createRealBoundary(): Promise<DbBoundary> {
   const supabase = await getServerSupabase();
 
-  return {
-    auth: {
-      getCurrentUser: async () => {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+  // Single in-flight user-lookup promise per boundary instance. The boundary
+  // itself is per-request (getModules is React.cache'd), so this collapses
+  // every layout/page/server-component auth check into ONE supabase.auth.getUser
+  // network call. Two parallel calls would each potentially trigger a refresh
+  // near token expiry, the first refresh rotates the refresh_token, and the
+  // second call's refresh fails — yielding spurious not_authenticated errors.
+  let currentUserPromise: Promise<{ id: string; email: string } | null> | null = null;
+  const getCurrentUserOnce = () => {
+    if (!currentUserPromise) {
+      currentUserPromise = supabase.auth.getUser().then(({ data: { user } }) => {
         if (!user) return null;
         return { id: user.id, email: user.email ?? '' };
-      },
+      });
+    }
+    return currentUserPromise;
+  };
+
+  return {
+    auth: {
+      getCurrentUser: getCurrentUserOnce,
       signInWithMagicLink: async (email, redirectTo) => {
         const { error } = await supabase.auth.signInWithOtp({
           email,
