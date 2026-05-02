@@ -12,6 +12,7 @@ import { asSessionId, type UserId } from '@/lib/modules/core';
 
 import { CloseSessionButton } from './_components/close-session-button';
 import { ConfirmCashoutsList } from './_components/confirm-cashouts-list';
+import { LedgerAdminPanel } from './_components/ledger-admin-panel';
 import { RecordBuyinSheet } from './_components/record-buyin-sheet';
 import { SessionTabs } from './_components/session-tabs';
 import { SubmitCashoutDrawer } from './_components/submit-cashout-drawer';
@@ -98,6 +99,22 @@ export default async function SessionDetail({ params }: { params: Promise<{ id: 
       amount: c.amount,
     }));
 
+  const adminBuyins = buyins.map((b) => ({
+    id: b.id,
+    userId: b.userId as unknown as string,
+    nickname: nicknameOf(b.userId),
+    amountPaise: b.amount,
+    recordedAt: b.recordedAt,
+  }));
+  const adminCashouts = cashouts.map((c) => ({
+    id: c.id,
+    userId: c.userId as unknown as string,
+    nickname: nicknameOf(c.userId),
+    chipCount: c.chipCount,
+    amountPaise: c.amount,
+    status: c.status,
+  }));
+
   const participantOptions = session.participants.map((uid) => ({
     id: uid,
     nickname: nicknameOf(uid),
@@ -165,12 +182,24 @@ export default async function SessionDetail({ params }: { params: Promise<{ id: 
             />
           </div>
           <ConfirmCashoutsList sessionId={session.id} pending={pendingCashouts} />
+          {session.status === 'open' ? (
+            <LedgerAdminPanel
+              sessionId={session.id}
+              buyins={adminBuyins}
+              cashouts={adminCashouts}
+              chipsPerPaise={session.chipsPerPaise}
+            />
+          ) : null}
         </div>
       </HouseControls>
 
       {showSubmitCashout ? (
         <div className="pt-2">
-          <SubmitCashoutDrawer sessionId={session.id} userId={me.id} />
+          <SubmitCashoutDrawer
+            sessionId={session.id}
+            userId={me.id}
+            chipsPerPaise={session.chipsPerPaise}
+          />
           {myCashout?.status === 'pending' ? (
             <p className="pt-2 text-xs text-[var(--foreground)]/70">
               Cashout submitted — waiting for the house to confirm{' '}
