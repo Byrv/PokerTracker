@@ -1,6 +1,6 @@
 # Poker Tracker
 
-Web app for tracking home/private poker games. See [requirments.md](../requirments.md) for product spec, [plan.md](../plan.md) for implementation plan, [executions/foundation.md](../executions/foundation.md) for build runbook.
+Web app for tracking home/private poker games. The v1 build runbook (frozen on release) lives in [../v1/](../v1/): see [v1/requirments.md](../v1/requirments.md) for product spec, [v1/plan.md](../v1/plan.md) for implementation plan, [v1/executions/foundation.md](../v1/executions/foundation.md) for build runbook.
 
 ## Local development
 
@@ -24,7 +24,7 @@ See `package.json` `scripts` for the full list. Key ones:
 
 ## Architecture
 
-See [plans/architecture.md](../plans/architecture.md) for the module map and dependency rules.
+See [v1/plans/architecture.md](../v1/plans/architecture.md) for the module map and dependency rules.
 
 ## Deploying
 
